@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Message from './Message';
 
 const MessagesHistory = ({ messages }) => (
-  <section id="messages-list">
+  <section id="messages-history">
     <ul>
       {messages.map(message => (
         <Message key={message.id} {...message} />

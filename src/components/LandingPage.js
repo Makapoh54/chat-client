@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { checkUserExists } from '../actions';
+import { checkUserExists as checkUserExistsAction, connectToChatServer as connectToChatServerAction } from '../actions';
 
 class LandingPage extends React.Component {
   constructor() {
@@ -18,13 +17,13 @@ class LandingPage extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps) {
-    console.log(nextProps);
     const { userInfo, errorMessage, history } = nextProps;
     if (errorMessage) {
       return { errorMessage, validationStatus: 'ERROR' };
     }
     if (!userInfo.exists) {
       history.push('/chat');
+      nextProps.connectToChatServer(userInfo.username);
     }
     return {};
   }
@@ -41,8 +40,7 @@ class LandingPage extends React.Component {
   handleOnClick() {
     const { username } = this.state;
     this.setState({ validationStatus: 'PROCESSING' });
-    console.log('clclc', this.state);
-    checkUserExists(username);
+    this.props.checkUserExists(username);
   }
 
   render() {
@@ -58,7 +56,7 @@ class LandingPage extends React.Component {
         </div>
         <div className="form-group">
           <button disabled={buttonDisabled} onClick={this.handleOnClick}>
-            Login
+            Connect
           </button>
         </div>
       </div>
@@ -70,11 +68,10 @@ LandingPage.propTypes = {
   checkUserExists: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
-  checkUserExists: username => {
-    dispatch(checkUserExists(username));
-  },
-});
+const mapDispatchToProps = {
+  checkUserExists: checkUserExistsAction,
+  connectToChatServer: connectToChatServerAction,
+};
 
 const mapStateToProps = state => ({
   userInfo: state.userInfo,

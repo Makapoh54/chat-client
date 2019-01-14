@@ -10,13 +10,13 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import reducers from './reducers';
 import rootSaga from './sagas';
-import setupSocket from './sockets';
+import ChatWebSocketConnection from './sockets/ChatWebSocketConnection';
 
 const sagaMiddleware = createSagaMiddleware();
 
 const store = createStore(reducers, applyMiddleware(sagaMiddleware));
 
-const socket = setupSocket(store.dispatch, 'username');
+const socket = new ChatWebSocketConnection('ws://localhost:8080', store.dispatch);
 
 sagaMiddleware.run(rootSaga, { socket });
 

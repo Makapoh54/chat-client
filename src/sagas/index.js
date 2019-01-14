@@ -7,25 +7,21 @@ const rootSaga = function* watchAll(params) {
   yield all([
     takeEvery(types.CHECK_USER_EXISTS, checkUserExists),
     takeEvery(types.ADD_MESSAGE, handleAddMessage(params.socket)),
-    takeEvery(types.ADD_USER, handleAddUser(params.socket)),
+    takeEvery(types.CONNECT_TO_CHAT_SERVER, connectToChatServer(params.socket)),
   ]);
 };
 
-const handleAddMessage = socket => action => {
-  console.log(action);
-  socket.send(JSON.stringify(action));
+const connectToChatServer = socket => action => {
+  socket.connect(action.username);
 };
 
-const handleAddUser = socket => action => {
-  console.log(action);
-  socket.send(JSON.stringify(action));
+const handleAddMessage = socket => action => {
+  socket.send(JSON.stringify({ ...action, username: socket.username }));
 };
 
 const checkUserExists = function*(action) {
-  console.log('checkUserExists', action);
-  const { exists } = yield call(fetchUserExists, action.userId);
-  console.log(exists);
-  yield put(checkUserSuccess(exists));
+  const { data } = yield call(fetchUserExists, action.username);
+  yield put(checkUserSuccess(data.data.userExists, action.username));
 };
 
 export default rootSaga;
