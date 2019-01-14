@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import './LandingPage.scss';
 import { checkUserExists as checkUserExistsAction, connectToChatServer as connectToChatServerAction } from '../actions';
+import chatStatuses from '../constants/chatStatuses';
 
 class LandingPage extends React.Component {
   constructor() {
@@ -17,14 +19,14 @@ class LandingPage extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps) {
-    const { userInfo, errorMessage, history } = nextProps;
+    const { chat, userInfo, errorMessage, history } = nextProps;
     if (errorMessage) {
       return { errorMessage, validationStatus: 'ERROR' };
     }
     if (!userInfo.exists) {
-      history.push('/chat');
       nextProps.connectToChatServer(userInfo.username);
     }
+    if (chat.status === chatStatuses.CONNECTED) history.push('/chat');
     return {};
   }
 
@@ -47,18 +49,15 @@ class LandingPage extends React.Component {
     const { errorMessage, validationStatus } = this.state;
     const buttonDisabled = validationStatus !== 'SUCCESS';
     return (
-      <div>
-        <h2>Login to Chat</h2>
+      <div className="login-form">
+        <h2>Connect to Chat</h2>
         <div>
-          <label htmlFor="username">Username</label>
-          <input type="text" className="form-control" name="username" onChange={this.handleChange} />
-          <label>{errorMessage}</label>
+          <label className="username-label">Username: </label>
+          <input type="text" className="username-input" name="username" onChange={this.handleChange} />
         </div>
-        <div className="form-group">
-          <button disabled={buttonDisabled} onClick={this.handleOnClick}>
-            Connect
-          </button>
-        </div>
+        <button className="connect-button" disabled={buttonDisabled} onClick={this.handleOnClick}>
+          Connect
+        </button>
       </div>
     );
   }
@@ -75,6 +74,7 @@ const mapDispatchToProps = {
 
 const mapStateToProps = state => ({
   userInfo: state.userInfo,
+  chat: state.chat,
 });
 
 export default connect(

@@ -41,3 +41,13 @@ export const connectToChatServer = username => ({
   type: types.CONNECT_TO_CHAT_SERVER,
   username,
 });
+
+export const disconnectedFromChat = status => ({
+  type: types.DISCONNECTED_FROM_CHAT,
+  status,
+});
+
+export const connectedToChat = status => ({
+  type: types.DISCONNECTED_FROM_CHAT,
+  status,
+});

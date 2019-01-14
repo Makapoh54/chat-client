@@ -1,23 +1,22 @@
 import types from '../constants/actionTypes';
-import { populateUsersList, messageReceived } from '../actions';
-
-const STATUS_CONNECTED = 'CONNECTED';
-const STATUS_NOT_CONNECTED = 'CONNECTED';
+import { populateUsersList, messageReceived, disconnectedFromChat, connectedToChat } from '../actions';
+import chatStatuses from '../constants/chatStatuses';
 
 class ChatWebSocketConnection {
   constructor(url, dispatch) {
     this.url = url;
     this.dispatch = dispatch;
-    this.status = STATUS_NOT_CONNECTED;
+    this.status = chatStatuses.DISCONNECTED;
     this.socket = {};
     this.username = undefined;
   }
 
   connect(username) {
     this.socket = new WebSocket(this.url);
-    this.status = STATUS_CONNECTED;
     this.username = username;
     this.socket.onopen = () => {
+      this.status = chatStatuses.CONNECTED;
+      this.dispatch(connectedToChat(chatStatuses.CONNECTED));
       this.socket.send(
         JSON.stringify({
           type: types.ADD_USER,
@@ -39,10 +38,24 @@ class ChatWebSocketConnection {
           break;
       }
     };
+
+    this.socket.onclose = () => {
+      this.status = chatStatuses.DISCONNECTED;
+      this.dispatch(disconnectedFromChat(chatStatuses.DISCONNECTED));
+    };
+
+    this.socket.onerror = () => {
+      this.status = chatStatuses.ERROR;
+      this.dispatch(disconnectedFromChat(chatStatuses.ERROR));
+    };
+  }
+
+  close() {
+    if (this.status === chatStatuses.DISCONNECTED) this.socket.close();
   }
 
   send(message) {
-    if (this.status === STATUS_CONNECTED && this.socket.send) {
+    if (this.status === chatStatuses.CONNECTED && this.socket.send) {
       this.socket.send(message);
     }
   }

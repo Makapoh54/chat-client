@@ -4,14 +4,15 @@
     margin: 0;
   }
   body {
-      font-family: "Press Start 2P";
+    font-family: 'Roboto Mono', monospace;
   }
   #container {
       display: grid;
       grid-template-columns: 1fr 3fr;
-      grid-template-areas: "sidebar main";
+      grid-template-areas: "userList main";
       width: 100vw;
       height: 100vh;
+      overflow: hidden;
   }
   #main {
       grid-area: main;
@@ -26,6 +27,9 @@
   }
   #messages-history {
       padding: 5px 0 0 5px;
+      height: 100vh;
+      padding-bottom: 50px;
+      overflow-y: scroll;
   }
   #user-list {
       grid-area: userList;
@@ -34,15 +38,13 @@
       height: 100%;
   }
   
-  /* new */
-  
   #new-message {
       padding: 0px;
       height: 50px;
   }
   
   #new-message input {
-      font-family: "Press Start 2P";
+      font-family: 'Roboto Mono', monospace;
       width: 100%;
       height: 100%;
       margin: 0;
