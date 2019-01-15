@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { connectToChatServer } from '../actions';
+import './UserList.scss';
 
 const UserList = ({ users }) => (
-  <aside id="user-list" className="user-list">
+  <aside className="user-list">
     <label>User List: </label>
     <ul>
       {users.map(user => (

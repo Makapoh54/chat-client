@@ -12,14 +12,8 @@ export const addUser = username => ({
   username,
 });
 
-export const checkUserExists = username => ({
-  type: types.CHECK_USER_EXISTS,
-  username,
-});
-
-export const checkUserSuccess = (exists, username) => ({
-  type: types.CHECK_USER_SUCCESS,
-  exists,
+export const storeCurrentUsername = username => ({
+  type: types.STORE_CURRENT_USERNAME,
   username,
 });
 
@@ -37,9 +31,14 @@ export const messageReceived = (message, username) => ({
   id: messageIdIncrement++,
 });
 
-export const connectToChatServer = username => ({
+export const connectToChatServer = (username, status) => ({
   type: types.CONNECT_TO_CHAT_SERVER,
   username,
+  status,
+});
+
+export const disconnectFromChatServer = () => ({
+  type: types.DISCONNECT_FROM_CHAT,
 });
 
 export const disconnectedFromChat = status => ({
@@ -48,6 +47,6 @@ export const disconnectedFromChat = status => ({
 });
 
 export const connectedToChat = status => ({
-  type: types.DISCONNECTED_FROM_CHAT,
+  type: types.CONNECTED_TO_CHAT,
   status,
 });

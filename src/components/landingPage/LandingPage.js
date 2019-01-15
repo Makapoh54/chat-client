@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import './LandingPage.scss';
-import { checkUserExists as checkUserExistsAction, connectToChatServer as connectToChatServerAction } from '../actions';
-import chatStatuses from '../constants/chatStatuses';
+import { connectToChatServer as connectToChatServerAction } from '../../actions';
+import chatStatuses from '../../constants/chatStatuses';
 
 class LandingPage extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       username: undefined,
       errorMessage: undefined,
@@ -18,16 +18,10 @@ class LandingPage extends React.Component {
     this.handleOnClick = this.handleOnClick.bind(this);
   }
 
-  static getDerivedStateFromProps(nextProps) {
-    const { chat, userInfo, errorMessage, history } = nextProps;
-    if (errorMessage) {
-      return { errorMessage, validationStatus: 'ERROR' };
-    }
-    if (!userInfo.exists) {
-      nextProps.connectToChatServer(userInfo.username);
-    }
+  componentDidUpdate() {
+    const { chat, history } = this.props;
+    console.log('componentDidUpdate', this.props);
     if (chat.status === chatStatuses.CONNECTED) history.push('/chat');
-    return {};
   }
 
   handleChange({ currentTarget }) {
@@ -42,7 +36,7 @@ class LandingPage extends React.Component {
   handleOnClick() {
     const { username } = this.state;
     this.setState({ validationStatus: 'PROCESSING' });
-    this.props.checkUserExists(username);
+    this.props.connectToChatServer(username);
   }
 
   render() {
@@ -54,6 +48,7 @@ class LandingPage extends React.Component {
         <div>
           <label className="username-label">Username: </label>
           <input type="text" className="username-input" name="username" onChange={this.handleChange} />
+          <label>${errorMessage}</label>
         </div>
         <button className="connect-button" disabled={buttonDisabled} onClick={this.handleOnClick}>
           Connect
@@ -64,16 +59,14 @@ class LandingPage extends React.Component {
 }
 
 LandingPage.propTypes = {
-  checkUserExists: PropTypes.func.isRequired,
+  connectToChatServer: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
-  checkUserExists: checkUserExistsAction,
   connectToChatServer: connectToChatServerAction,
 };
 
 const mapStateToProps = state => ({
-  userInfo: state.userInfo,
   chat: state.chat,
 });
 

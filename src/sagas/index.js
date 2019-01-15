@@ -1,27 +1,16 @@
-import { takeEvery, all, call, put } from 'redux-saga/effects';
-import { fetchUserExists } from '../services/userApi';
-import { checkUserSuccess } from '../actions';
+import { takeEvery, all } from 'redux-saga/effects';
 import types from '../constants/actionTypes';
+import { connectToChatServer, disconnectedFromServer, disconnectFromChatServer } from './connection';
+import { handleAddUser, handleAddMessage } from './chat';
 
 const rootSaga = function* watchAll(params) {
   yield all([
-    takeEvery(types.CHECK_USER_EXISTS, checkUserExists),
     takeEvery(types.ADD_MESSAGE, handleAddMessage(params.socket)),
+    takeEvery(types.ADD_USER, handleAddUser(params.socket)),
     takeEvery(types.CONNECT_TO_CHAT_SERVER, connectToChatServer(params.socket)),
+    takeEvery(types.DISCONNECTED_FROM_CHAT, disconnectedFromServer),
+    takeEvery(types.DISCONNECT_FROM_CHAT, disconnectFromChatServer),
   ]);
-};
-
-const connectToChatServer = socket => action => {
-  socket.connect(action.username);
-};
-
-const handleAddMessage = socket => action => {
-  socket.send(JSON.stringify({ ...action, username: socket.username }));
-};
-
-const checkUserExists = function*(action) {
-  const { data } = yield call(fetchUserExists, action.username);
-  yield put(checkUserSuccess(data.data.userExists, action.username));
 };
 
 export default rootSaga;

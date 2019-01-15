@@ -8,21 +8,15 @@ class ChatWebSocketConnection {
     this.dispatch = dispatch;
     this.status = chatStatuses.DISCONNECTED;
     this.socket = {};
-    this.username = undefined;
   }
 
-  connect(username) {
+  connect() {
+    if (this.status === chatStatuses.PENDING) return;
     this.socket = new WebSocket(this.url);
-    this.username = username;
+    this.status = chatStatuses.PENDING;
     this.socket.onopen = () => {
       this.status = chatStatuses.CONNECTED;
       this.dispatch(connectedToChat(chatStatuses.CONNECTED));
-      this.socket.send(
-        JSON.stringify({
-          type: types.ADD_USER,
-          username,
-        }),
-      );
     };
 
     this.socket.onmessage = event => {
@@ -51,7 +45,7 @@ class ChatWebSocketConnection {
   }
 
   close() {
-    if (this.status === chatStatuses.DISCONNECTED) this.socket.close();
+    if (this.status !== chatStatuses.DISCONNECTED) this.socket.close();
   }
 
   send(message) {
