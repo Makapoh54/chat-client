@@ -5,9 +5,14 @@ import UserList from './userList/UserList';
 import MessagesHistory from './messagesHistory/MessagesHistory';
 import MessageInput from './messageInput/MessageInput';
 import chatStatuses from '../../constants/chatStatuses';
-import { addUser as addUserAction, dis } from '../../actions';
+import { addUser as addUserAction, disconnectFromChatServer as disconnectFromChatServerAction } from '../../actions';
 
 class Chat extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleOnClick = this.handleOnClick.bind(this);
+  }
+
   componentDidUpdate() {
     const { chat, history } = this.props;
     if (chat.status === chatStatuses.DISCONNECTED || chat.status === chatStatuses.ERROR) {
@@ -20,9 +25,7 @@ class Chat extends React.Component {
   }
 
   handleOnClick() {
-    const { username } = this.state;
-    this.setState({ validationStatus: 'PROCESSING' });
-    this.props.connectToChatServer(username);
+    this.props.disconnectFromChatServer();
   }
 
   render() {
@@ -33,8 +36,8 @@ class Chat extends React.Component {
           Disconnect
         </button>
         <section className="main">
-          <MessagesHistory />
-          <MessageInput />
+          <MessagesHistory username={this.props.userInfo.username} />
+          <MessageInput username={this.props.userInfo.username} />
         </section>
       </div>
     );
@@ -48,6 +51,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   addUser: addUserAction,
+  disconnectFromChatServer: disconnectFromChatServerAction,
 };
 
 export default connect(

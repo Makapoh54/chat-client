@@ -1,7 +1,5 @@
 import types from '../constants/actionTypes';
 
-let messageIdIncrement = 0;
-
 export const populateUsersList = users => ({
   type: types.USERS_LIST,
   users,
@@ -21,14 +19,12 @@ export const addMessage = (message, username) => ({
   type: types.ADD_MESSAGE,
   message,
   username,
-  id: messageIdIncrement++,
 });
 
 export const messageReceived = (message, username) => ({
   type: types.MESSAGE_RECEIVED,
   message,
   username,
-  id: messageIdIncrement++,
 });
 
 export const connectToChatServer = (username, status) => ({

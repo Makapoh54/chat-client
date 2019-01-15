@@ -10,5 +10,5 @@ export const handleAddUser = socket => action => {
 };
 
 export const handleAddMessage = socket => action => {
-  socket.send(JSON.stringify({ ...action, username: socket.username }));
+  socket.send(JSON.stringify({ ...action, username: action.username }));
 };

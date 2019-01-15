@@ -7,8 +7,8 @@ const UserList = ({ users }) => (
   <aside className="user-list">
     <label>User List: </label>
     <ul>
-      {users.map(user => (
-        <li key={user.id}>{user.username}</li>
+      {users.map((user, index) => (
+        <li key={index}>{user.username}</li>
       ))}
     </ul>
   </aside>

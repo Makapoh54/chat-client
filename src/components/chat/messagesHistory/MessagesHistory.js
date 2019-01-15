@@ -19,13 +19,16 @@ class MessagesHistory extends React.Component {
   }
 
   render() {
-    const { messages } = this.props;
+    const { messages, username } = this.props;
     return (
       <section className="messages-history">
         <ul>
-          {messages.map(message => (
-            <Message key={message.id} {...message} />
-          ))}
+          {messages.map((message, id) => {
+            if (message.username === username) {
+              message.username = 'Me';
+            }
+            return <Message key={id} {...message} />;
+          })}
         </ul>
         <div style={{ float: 'left', clear: 'both' }} ref={this.messagesEnd} />
       </section>
@@ -36,7 +39,6 @@ class MessagesHistory extends React.Component {
 MessagesHistory.propTypes = {
   messages: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
       username: PropTypes.string.isRequired,
       message: PropTypes.string.isRequired,
     }).isRequired,

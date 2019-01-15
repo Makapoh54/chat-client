@@ -17,3 +17,15 @@
   .main {
     grid-area: main;
   }
+  .disconnect-button {
+    grid-area: userList;
+    align-self: end;
+    border: 1px solid black;
+    background-color: white;
+    color: black;
+    padding: 5px 10px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'Roboto Mono', monospace;
+  }

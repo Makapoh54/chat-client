@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import { addMessage as addMessageAction } from '../../../actions';
 import './MessageInput.scss';
 
-const MessageInput = props => (
+const MessageInput = ({ username, addMessage }) => (
   <section className="new-message">
     <input
       onKeyPress={e => {
         if (e.key === 'Enter' && e.target.value !== '') {
-          props.addMessage(e.target.value, 'Me');
+          addMessage(e.target.value, username);
           e.target.value = '';
         }
       }}
@@ -20,6 +20,7 @@ const MessageInput = props => (
 
 MessageInput.propTypes = {
   addMessage: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
 };
 
 const mapDispatchToProps = {

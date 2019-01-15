@@ -9,7 +9,7 @@ const rootSaga = function* watchAll(params) {
     takeEvery(types.ADD_USER, handleAddUser(params.socket)),
     takeEvery(types.CONNECT_TO_CHAT_SERVER, connectToChatServer(params.socket)),
     takeEvery(types.DISCONNECTED_FROM_CHAT, disconnectedFromServer),
-    takeEvery(types.DISCONNECT_FROM_CHAT, disconnectFromChatServer),
+    takeEvery(types.DISCONNECT_FROM_CHAT, disconnectFromChatServer(params.socket)),
   ]);
 };
 
