@@ -1,62 +1,51 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { useState, useEffect } from 'react-hooks';
 import './LandingPage.scss';
 import { connectToChatServer as connectToChatServerAction } from '../../actions';
 import chatStatuses from '../../constants/chatStatuses';
+import { useChatStatus } from '../../hooks/chatHooks';
 
-class LandingPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: undefined,
-      validationStatus: 'PROCESSING',
-    };
+function LandingPage(props) {
+  const chatStatus = useChatStatus();
+  const [validationStatus, setValidationStatus] = useState('PROCESSING');
+  const [username, setUsername] = useState('PROCESSING');
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleOnClick = this.handleOnClick.bind(this);
-  }
+  useEffect(() => {
+    if (chatStatus === chatStatuses.CONNECTED) props.history.push('/chat');
+  });
 
-  componentDidUpdate() {
-    const { chat, history } = this.props;
-    if (chat.status === chatStatuses.CONNECTED) history.push('/chat');
-  }
-
-  handleChange({ currentTarget }) {
+  function handleChange({ currentTarget }) {
     const { value } = currentTarget;
-    const { validationStatus } = value.length < 2 ? { validationStatus: 'ERROR' } : { validationStatus: 'SUCCESS' };
-    this.setState({ username: value, validationStatus });
+    const validationStatus = value.length < 2 ? 'ERROR' : 'SUCCESS';
+    setValidationStatus(validationStatus);
+    setUsername(value);
   }
 
-  handleOnClick() {
-    const { username } = this.state;
-    this.setState({ validationStatus: 'PROCESSING' });
+  function handleOnClick() {
     this.props.connectToChatServer(username);
   }
 
-  render() {
-    const { validationStatus } = this.state;
-    const buttonDisabled = validationStatus !== 'SUCCESS';
-    return (
-      <div className="login-form">
-        <h2>Connect to Chat</h2>
-        <div>
-          <label className="username-label">Username: </label>
-          <input
-            type="text"
-            className="username-input"
-            name="username"
-            onChange={this.handleChange}
-            required
-            placeholder="Min. length - 2"
-          />
-        </div>
-        <button className="connect-button" disabled={buttonDisabled} onClick={this.handleOnClick}>
-          Connect
-        </button>
+  return (
+    <div className="login-form">
+      <h2>Connect to Chat</h2>
+      <div>
+        <label className="username-label">Username: </label>
+        <input
+          type="text"
+          className="username-input"
+          name="username"
+          onChange={handleChange}
+          required
+          placeholder="Min. length - 2"
+        />
       </div>
-    );
-  }
+      <button className="connect-button" disabled={validationStatus !== 'SUCCESS'} onClick={handleOnClick}>
+        Connect
+      </button>
+    </div>
+  );
 }
 
 LandingPage.propTypes = {
