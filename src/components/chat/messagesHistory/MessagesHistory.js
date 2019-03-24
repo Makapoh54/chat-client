@@ -1,53 +1,28 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React, { useEffect, useRef } from 'react';
+import { useChatNewMessages } from '../../../hooks/chatHooks';
 import Message from '../message/Message';
 import './MessagesHistory.scss';
 
-class MessagesHistory extends React.Component {
-  constructor(props) {
-    super(props);
-    this.messagesEnd = React.createRef();
-  }
+export default () => {
+  const messagesEnd = useRef(null);
+  const messages = useChatNewMessages();
 
-  scrollToBottom = () => {
-    this.messagesEnd.current.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => {
+    scrollToBottom();
+  });
+
+  const scrollToBottom = () => {
+    messagesEnd.current.scrollIntoView({ behavior: 'smooth' });
   };
 
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
-
-  render() {
-    const { messages, username } = this.props;
-    return (
-      <section className="messages-history">
-        <ul>
-          {messages.map((message, id) => {
-            if (message.username === username) {
-              message.username = 'Me';
-            }
-            return <Message key={id} {...message} />;
-          })}
-        </ul>
-        <div style={{ float: 'left', clear: 'both' }} ref={this.messagesEnd} />
-      </section>
-    );
-  }
-}
-
-MessagesHistory.propTypes = {
-  messages: PropTypes.arrayOf(
-    PropTypes.shape({
-      username: PropTypes.string.isRequired,
-      message: PropTypes.string.isRequired,
-    }).isRequired,
-  ).isRequired,
+  return (
+    <section className="messages-history">
+      <ul>
+        {messages.map((message, id) => {
+          return <Message key={id} {...message} />;
+        })}
+      </ul>
+      <div style={{ float: 'left', clear: 'both' }} ref={messagesEnd} />
+    </section>
+  );
 };
-
-export default connect(
-  state => ({
-    messages: state.messages,
-  }),
-  {},
-)(MessagesHistory);

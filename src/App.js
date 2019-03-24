@@ -1,21 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import getRoutes from './routes';
 import { Route } from 'react-router-dom';
-import { useState } from 'react-hooks';
 import { ToastContainer } from 'react-toastify';
-import { Provider as UsernameProvider } from './contexts/usernameContext';
+import UsernameContext from './contexts/chatContext';
+import ChatWebSocket from './sockets/ChatWS';
 import 'react-toastify/dist/ReactToastify.css';
-
 const App = () => {
   const [username, setUsername] = useState(null);
+  const [chat, setChat] = useState(new ChatWebSocket('ws://localhost:8080'));
+
   return (
     <div>
-      <UsernameProvider value={(username, setUsername)}>
+      <UsernameContext.Provider value={{ chat, username, setUsername }}>
         {getRoutes().map(({ path, exact, component }) => (
           <Route key={path} path={path} exact={exact} component={component} />
         ))}
-        <ToastContainer />
-      </UsernameProvider>
+      </UsernameContext.Provider>
+      <ToastContainer />
     </div>
   );
 };

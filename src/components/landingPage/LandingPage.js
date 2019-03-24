@@ -1,20 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { useState, useEffect } from 'react-hooks';
-import './LandingPage.scss';
-import { connectToChatServer as connectToChatServerAction } from '../../actions';
+import { useState, useEffect, useContext } from 'react';
 import chatStatuses from '../../constants/chatStatuses';
-import { useChatStatus } from '../../hooks/chatHooks';
+import { useChatStatus, useConnectToChat } from '../../hooks/chatHooks';
+import chatContext from '../../contexts/chatContext';
 
-function LandingPage(props) {
-  const chatStatus = useChatStatus();
+import './LandingPage.scss';
+
+export default function LandingPage(props) {
+  const { chat, setUsername: setGlobalUsername } = useContext(chatContext);
   const [validationStatus, setValidationStatus] = useState('PROCESSING');
-  const [username, setUsername] = useState('PROCESSING');
-
+  const chatStatus = useChatStatus(chat);
+  const { setUsername, connect } = useConnectToChat(setGlobalUsername, chat);
   useEffect(() => {
     if (chatStatus === chatStatuses.CONNECTED) props.history.push('/chat');
-  });
+  }, [chatStatus]);
 
   function handleChange({ currentTarget }) {
     const { value } = currentTarget;
@@ -24,7 +23,7 @@ function LandingPage(props) {
   }
 
   function handleOnClick() {
-    this.props.connectToChatServer(username);
+    connect();
   }
 
   return (
@@ -47,20 +46,3 @@ function LandingPage(props) {
     </div>
   );
 }
-
-LandingPage.propTypes = {
-  connectToChatServer: PropTypes.func.isRequired,
-};
-
-const mapDispatchToProps = {
-  connectToChatServer: connectToChatServerAction,
-};
-
-const mapStateToProps = state => ({
-  chat: state.chat,
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(LandingPage);

@@ -1,33 +1,22 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { addMessage as addMessageAction } from '../../../actions';
+import React, { useContext } from 'react';
+import chatContext from '../../../contexts/chatContext';
+import types from '../../../constants/actionTypes';
 import './MessageInput.scss';
 
-const MessageInput = ({ username, addMessage }) => (
-  <section className="new-message">
-    <input
-      onKeyPress={e => {
-        if (e.key === 'Enter' && e.target.value !== '') {
-          addMessage(e.target.value, username);
-          e.target.value = '';
-        }
-      }}
-      type="text"
-    />
-  </section>
-);
+export default () => {
+  const { chat, username } = useContext(chatContext);
 
-MessageInput.propTypes = {
-  addMessage: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
+  return (
+    <section className="new-message">
+      <input
+        onKeyPress={e => {
+          if (e.key === 'Enter' && e.target.value !== '') {
+            chat.send(JSON.stringify({ type: types.ADD_MESSAGE, message: e.target.value, username }));
+            e.target.value = '';
+          }
+        }}
+        type="text"
+      />
+    </section>
+  );
 };
-
-const mapDispatchToProps = {
-  addMessage: addMessageAction,
-};
-
-export default connect(
-  () => ({}),
-  mapDispatchToProps,
-)(MessageInput);

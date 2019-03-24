@@ -1,31 +1,19 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useChatActiveUsersList } from '../../../hooks/chatHooks';
 import './UserList.scss';
 
-const UserList = ({ users }) => (
-  <aside className="user-list">
-    <label>User List: </label>
-    <ul>
-      {users.map((user, index) => (
-        <li key={index}>{user.username}</li>
-      ))}
-    </ul>
-  </aside>
-);
-
-UserList.propTypes = {
-  users: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      username: PropTypes.string.isRequired,
-    }).isRequired,
-  ).isRequired,
+const UserList = () => {
+  const users = useChatActiveUsersList();
+  return (
+    <aside className="user-list">
+      <label>User List: </label>
+      <ul>
+        {users.map((user, index) => (
+          <li key={index}>{user.username}</li>
+        ))}
+      </ul>
+    </aside>
+  );
 };
 
-export default connect(
-  state => ({
-    users: state.users,
-  }),
-  {},
-)(UserList);
+export default UserList;

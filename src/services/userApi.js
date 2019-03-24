@@ -1,5 +1,5 @@
 import axios from 'axios';
 
-export const fetchUserExists = username => {
-  return axios.get(`/api/v1/users/${username}/exists`);
+export const fetchUserExists = async username => {
+  return (await axios.get(`/api/v1/users/${username}/exists`)).data;
 };

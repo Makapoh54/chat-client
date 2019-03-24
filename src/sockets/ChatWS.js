@@ -1,11 +1,9 @@
 import types from '../constants/actionTypes';
-import { populateUsersList, messageReceived, disconnectedFromChat, connectedToChat } from '../actions';
 import chatStatuses from '../constants/chatStatuses';
 
 class ChatWebSocketConnection {
-  constructor(url, dispatch) {
+  constructor(url) {
     this.url = url;
-    this.dispatch = dispatch;
     this.status = chatStatuses.DISCONNECTED;
     this.socket = {};
     this.eventEmitter = new EventTarget();
@@ -17,20 +15,19 @@ class ChatWebSocketConnection {
     this.status = chatStatuses.PENDING;
     this.socket.onopen = () => {
       this.status = chatStatuses.CONNECTED;
-      this.dispatch(connectedToChat());
-      this.eventEmitter.dispatchEvent(new CustomEvent('CHAT_STATUS', { status: this.status }));
+      this.eventEmitter.dispatchEvent(new CustomEvent('CHAT_STATUS', { detail: { status: this.status } }));
     };
 
     this.socket.onmessage = event => {
       const data = JSON.parse(event.data);
       switch (data.type) {
         case types.USERS_LIST:
-          this.dispatch(populateUsersList(data.users));
-          this.eventEmitter.dispatchEvent(new CustomEvent('USERS_LIST', { users: data.users }));
+          this.eventEmitter.dispatchEvent(new CustomEvent('USERS_LIST', { detail: { users: data.users } }));
           break;
         case types.ADD_MESSAGE:
-          this.dispatch(messageReceived(data.message, data.username));
-          this.eventEmitter.dispatchEvent(new CustomEvent('NEW_MESSAGE', { users: data.users }));
+          this.eventEmitter.dispatchEvent(
+            new CustomEvent('NEW_MESSAGE', { detail: { message: data.message, username: data.username } }),
+          );
           break;
         default:
           break;
@@ -39,14 +36,12 @@ class ChatWebSocketConnection {
 
     this.socket.onclose = () => {
       this.status = chatStatuses.DISCONNECTED;
-      this.dispatch(disconnectedFromChat(chatStatuses.DISCONNECTED));
-      this.eventEmitter.dispatchEvent(new CustomEvent('CHAT_STATUS', { status: this.status }));
+      this.eventEmitter.dispatchEvent(new CustomEvent('CHAT_STATUS', { detail: { status: this.status } }));
     };
 
     this.socket.onerror = () => {
       this.status = chatStatuses.ERROR;
-      this.dispatch(disconnectedFromChat(chatStatuses.ERROR));
-      this.eventEmitter.dispatchEvent(new CustomEvent('CHAT_STATUS', { status: this.status }));
+      this.eventEmitter.dispatchEvent(new CustomEvent('CHAT_STATUS', { detail: { status: this.status } }));
     };
   }
 

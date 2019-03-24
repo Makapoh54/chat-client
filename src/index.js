@@ -1,31 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import createSagaMiddleware from 'redux-saga';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import './index.scss';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import reducers from './reducers';
-import rootSaga from './sagas';
-import ChatWebSocket from './sockets/ChatWS';
-
-const sagaMiddleware = createSagaMiddleware();
-
-const store = createStore(reducers, applyMiddleware(sagaMiddleware));
-
-const socket = new ChatWebSocket('ws://localhost:8080', store.dispatch);
-
-sagaMiddleware.run(rootSaga, { socket });
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router>
-      <App />
-    </Router>
-  </Provider>,
+  <Router>
+    <App />
+  </Router>,
   document.getElementById('root'),
 );
 
